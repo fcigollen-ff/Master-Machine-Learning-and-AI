@@ -1,85 +1,84 @@
 import streamlit as st
 import google.generativeai as genai
 
-# --- Page Config ---
-st.set_page_config(page_title="SQL Whisperer", page_icon="🤖", layout="centered")
+# --- Configuración de la página ---
+st.set_page_config(page_title="Asistente SQL con IA", page_icon="🤖", layout="centered")
 
-# --- Helper Function to Load Style Guide ---
+# --- Función auxiliar para cargar la guía de estilo ---
 @st.cache_data
 def load_style_guide():
     try:
         with open("sql_style_guide.md", "r", encoding="utf-8") as f:
             return f.read()
     except FileNotFoundError:
-        return "Error: Could not find 'sql_style_guide.md'."
+        return "Error: No se pudo encontrar el archivo 'sql_style_guide.md'."
 
 style_guide_content = load_style_guide()
 
-# --- Authenticate using Streamlit Secrets ---
-# This looks in the server's hidden vault for your key, so users don't have to enter it.
+# --- Autenticación usando los Secretos de Streamlit ---
 try:
     api_key = st.secrets["GEMINI_API_KEY"]
     genai.configure(api_key=api_key)
     model = genai.GenerativeModel('gemini-2.5-flash')
 except KeyError:
-    st.error("🚨 API Key not found. Please add GEMINI_API_KEY to your Streamlit secrets.")
-    st.stop() # Stops the app from running further if the key is missing
+    st.error("🚨 No se encontró la API Key. Por favor, añade GEMINI_API_KEY a los secretos de Streamlit.")
+    st.stop()
 
-# --- Main UI ---
-st.title("🤖 The SQL Whisperer")
-st.markdown("Your AI-powered SQL assistant. Refactor messy code to match our style guide, or explain complex queries in plain language.")
+# --- Interfaz Principal (UI) ---
+st.title("🤖 Asistente SQL con IA")
+st.markdown("Tu asistente de SQL impulsado por Inteligencia Artificial. Refactoriza código desordenado para que coincida con nuestra guía de estilo, o explica consultas complejas en lenguaje claro.")
 
-tab1, tab2 = st.tabs(["✨ Refactor SQL", "📖 Explain SQL"])
+tab1, tab2 = st.tabs(["✨ Refactorizar SQL", "📖 Explicar SQL"])
 
-# --- TAB 1: SQL REFACTOR ---
+# --- PESTAÑA 1: REFACTORIZACIÓN DE SQL ---
 with tab1:
-    st.subheader("Format & Refactor Code")
-    messy_sql = st.text_area("Input SQL Query:", height=200, key="refactor_input")
+    st.subheader("Formatear y Refactorizar Código")
+    messy_sql = st.text_area("Introduce la consulta SQL:", height=200, key="refactor_input")
     
-    if st.button("Refactor Code", type="primary"):
+    if st.button("Refactorizar Código", type="primary"):
         if not messy_sql:
-            st.warning("Please paste some SQL code to refactor.")
+            st.warning("Por favor, pega un poco de código SQL para refactorizar.")
         else:
-            with st.spinner("Refactoring..."):
+            with st.spinner("Refactorizando..."):
                 prompt = f"""
-                You are a strict Senior Data Engineer. Refactor the following SQL query so it perfectly 
-                matches the rules in the provided SQL Style Guide. 
-                Return the refactored SQL code inside a code block. Below the code block, provide a brief 
-                bulleted list of the specific style guide rules you applied.
+                Eres un Ingeniero de Datos Senior estricto. Refactoriza la siguiente consulta SQL para que 
+                coincida perfectamente con las reglas de la Guía de Estilo SQL proporcionada. 
+                Devuelve el código SQL refactorizado dentro de un bloque de código. Debajo del bloque de código, 
+                proporciona una breve lista de viñetas EN ESPAÑOL de las reglas específicas de la guía de estilo que aplicaste.
 
-                --- SQL STYLE GUIDE ---
+                --- GUÍA DE ESTILO SQL ---
                 {style_guide_content}
 
-                --- MESSY SQL QUERY ---
+                --- CONSULTA SQL DESORDENADA ---
                 {messy_sql}
                 """
                 try:
                     response = model.generate_content(prompt)
-                    st.markdown("### 🎯 Refactored Result")
+                    st.markdown("### 🎯 Resultado Refactorizado")
                     st.markdown(response.text)
                 except Exception as e:
-                    st.error(f"An error occurred: {e}")
+                    st.error(f"Ocurrió un error: {e}")
 
-# --- TAB 2: SQL EXPLAINER ---
+# --- PESTAÑA 2: EXPLICACIÓN DE SQL ---
 with tab2:
-    st.subheader("Translate SQL to Plain English/Spanish")
-    complex_sql = st.text_area("Input Complex SQL:", height=200, key="explain_input")
+    st.subheader("Traducir SQL a Lenguaje Natural")
+    complex_sql = st.text_area("Introduce el SQL complejo:", height=200, key="explain_input")
     
-    if st.button("Explain Code", type="primary"):
+    if st.button("Explicar Código", type="primary"):
         if not complex_sql:
-            st.warning("Please paste some SQL code to explain.")
+            st.warning("Por favor, pega un poco de código SQL para explicar.")
         else:
-            with st.spinner("Analyzing code..."):
+            with st.spinner("Analizando el código..."):
                 prompt = f"""
-                You are a helpful database teacher. Explain what the following SQL query is doing in plain, 
-                easy-to-understand language. Break it down step-by-step.
+                Eres un profesor de bases de datos muy útil. Explica qué está haciendo la siguiente consulta SQL 
+                en un lenguaje claro, fácil de entender y EN ESPAÑOL. Desglósalo paso a paso.
 
-                --- SQL QUERY ---
+                --- CONSULTA SQL ---
                 {complex_sql}
                 """
                 try:
                     response = model.generate_content(prompt)
-                    st.markdown("### 🧠 Explanation")
+                    st.markdown("### 🧠 Explicación")
                     st.markdown(response.text)
                 except Exception as e:
-                    st.error(f"An error occurred: {e}")
+                    st.error(f"Ocurrió un error: {e}")
