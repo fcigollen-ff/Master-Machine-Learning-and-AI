@@ -31,7 +31,7 @@
 
 
 **2. Pestaña de Explicación de SQL:**
-![Explicando SQL](link_a_tu_imagen_2.png)
+![Explicando SQL]
 <img width="839" height="889" alt="image" src="https://github.com/user-attachments/assets/43e48edc-f05e-4aae-b4c0-2acce5c63684" />
 <img width="901" height="596" alt="image" src="https://github.com/user-attachments/assets/9264e3f7-5738-4909-bb2f-29dc18b68625" />
 <img width="829" height="835" alt="image" src="https://github.com/user-attachments/assets/e74e6103-b693-4374-b940-3ac5d96e6024" />
